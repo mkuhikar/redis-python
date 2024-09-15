@@ -14,7 +14,7 @@ async def handle_client(reader,writer):
             break
         messages = data.decode()
         print(f"Received {messages} from {addr!r}")
-        messages = messages.split('\n')
+        # messages = messages.split('\n')
         print(f"Messages {messages}")
         try:
             parsed_command = Parser.parse_input(messages)
