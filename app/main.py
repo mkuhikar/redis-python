@@ -15,20 +15,24 @@ async def handle_client(reader,writer):
         messages = data.decode()
         print(f"Received {messages} from {addr!r}")
         # messages = messages.split('\n')
-        print(f"Messages {messages}")
+
         try:
-            parsed_command = Parser.parse_input(messages)
+            parsed_command = Parser.parse_input(messages).split('\n')
             print(f"Parsed RESP command: {parsed_command}")
         except Exception as e:
             print(f"Error parsing command: {e}")
             writer.write(b'-ERR invalid command\r\n')  # Send an error response
             await writer.drain()
             continue
-        # for message in messages:
-        #     print(f"Individual message {message}")
-        #     if 'PING' in message:
-        #         writer.write(client_response)
-        #         writer.drain()
+        if parsed_command[0] == 'PING':
+            writer.write(client_response)
+        elif parsed_command[0] == 'ECHO':
+            if len(parsed_command)>1:
+                echo_message = parsed_command[1]
+                echo_response = f'+{echo_message}\r\n'
+                writer.write(echo_response.encode())
+            else:
+                writer.write(b'-ERR wrong number of arguments for \'ECHO\' command\r\n')
 
     print("Close the connection")
     writer.close()
