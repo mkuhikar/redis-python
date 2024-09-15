@@ -16,7 +16,7 @@ class Parser:
 
         num_elements = int(lines[0][1:])  # Number of elements in the RESP array
 
-        if num_elements < 2:
+        if not 'PING'in lines and num_elements < 2:
             raise ValueError("RESP message must contain at least 2 elements")
 
         command = None
