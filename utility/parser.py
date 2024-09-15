@@ -32,14 +32,17 @@ class Parser:
                 # First bulk string is the command
                 if command is None:
                     command = lines[i]
+                    print(f"Command1 {command} argument {argument}")
                 else:
                     # Second bulk string is the argument
                     argument = lines[i]
+                    print(f"Command2 {command} argument {argument}")
                 i += 1  # Move to the next '$' or end
-
+                if command and argument:
+                    break
             else:
                 i += 1
-
+        print(f"Command {command} argument {argument}")
         if command is None or argument is None:
             raise ValueError("Command or argument not found in RESP message")
 
