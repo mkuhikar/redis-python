@@ -6,6 +6,7 @@ from utility.parser import Parser
 async def handle_client(reader,writer):
     
     addr = writer.get_extra_info('peername')
+    redis_store = {}
 
     client_response = b'+PONG\r\n'
     while(True):
@@ -16,7 +17,7 @@ async def handle_client(reader,writer):
         print(f"Received {messages} from {addr!r}")
         # messages = messages.split('\n')
         try:
-            command,argument = Parser.parse_resp(messages)
+            command,argument,argument2 = Parser.parse_resp(messages)
             print(f"Parsed command: {command}, argument: {argument}")
         except Exception as e:
             print(f"Error parsing RESP message: {e}")
@@ -31,6 +32,13 @@ async def handle_client(reader,writer):
 
             echo_response = f'+{argument}\r\n'
             writer.write(echo_response.encode())
+        elif command == 'SET':
+            redis_store[argument] = argument2
+        elif command == 'GET':
+            value = redis_store[argument]
+            set_response = f'+{value}\r\n'
+            writer.write(set_response.encode())
+
            
 
     print("Close the connection")
