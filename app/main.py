@@ -36,6 +36,8 @@ async def handle_client(reader,writer):
             print("Inside SET")
             redis_store[argument] = argument2
             print(f"Redis store {redis_store}")
+            ok_response = f"+OK\r\n"
+            writer.write(ok_response.encode())
         elif command == 'GET':
             print("Inside SET")
             value = redis_store[argument]
