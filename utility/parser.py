@@ -33,16 +33,17 @@ class Parser:
                 # First bulk string is the command
                 if command is None:
                     command = lines[i]
-                else:
+                elif argument is None:
                     print(f"{command} {i} value {argument}")
                     # Second bulk string is the argument
                     argument = lines[i]
-                i += 1  # Move to the next '$' or end
-                if command !='SET' and argument:
-                    break
-                else:
+                elif command and argument:
                     argument2 = lines[i]
                     break
+                  # Move to the next '$' or end
+                if command and command !='SET' and argument:
+                    break
+                
             else:
                 i += 1
         print(f"Command {command} argument {argument} argument2 {argument2}")
