@@ -1,7 +1,7 @@
 import socket  # noqa: F401
+import asyncio
 
-
-def main():
+async def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
 
@@ -25,4 +25,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
