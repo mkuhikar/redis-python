@@ -17,7 +17,7 @@ async def handle_client(reader,writer):
         print(f"Received {messages} from {addr!r}")
         # messages = messages.split('\n')
         try:
-            command,argument,argument2 = Parser.parse_resp(messages)
+            command,argument,argument2,command2,argument3 = Parser.parse_resp(messages)
             print(f"Parsed command: {command}, argument: {argument} argument2 {argument2}")
         except Exception as e:
             print(f"Error parsing RESP message: {e}")

@@ -20,8 +20,11 @@ class Parser:
             raise ValueError("RESP message must contain at least 2 elements")
 
         command = None
-        argument = None
+        command2 = None
+        argument1 = None
         argument2 = None
+        argument3 = None
+        expiry = None
 
         i = 1
         while i < len(lines):
@@ -33,21 +36,25 @@ class Parser:
                 # First bulk string is the command
                 if command is None:
                     command = lines[i]
-                elif argument is None:
-                    print(f"{command} {i} value {argument}")
+                elif argument1 is None:
+                    print(f"{command} {i} value {argument1}")
                     # Second bulk string is the argument
-                    argument = lines[i]
-                elif command and argument:
+                    argument1 = lines[i]
+                elif command and argument1:
                     argument2 = lines[i]
-                    break
+                elif command and argument1 and argument2:
+                    command2 = lines[i]
+                elif command and argument1 and argument2 and command2:
+                    argument3 = lines[i]
+                    # break
                   # Move to the next '$' or end
-                if command and command !='SET' and argument:
-                    break
+                # if command and command !='SET' and argument1:
+                #     break
                 
             else:
                 i += 1
-        print(f"Command {command} argument {argument} argument2 {argument2}")
+        print(f"Command {command} argument {argument1} argument2 {argument2} command2 {command2} argument3 {argument3}")
         if command is None :
             raise ValueError("Command or argument not found in RESP message")
 
-        return command, argument,argument2
+        return command, argument1,argument2,command2,argument3
