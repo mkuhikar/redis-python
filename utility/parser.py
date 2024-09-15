@@ -5,44 +5,42 @@ import re
 
 class Parser:
 
-    __version__ = '0.1.2'
-
-    def __init__(self, file_path='', redis='', delimeter=',', pipe=False):
-        rows = self.read_stdin() if pipe else self.read_file(file_path)
-
-        # # Validate command:
-        # if not re.findall(r"({[[0-9]+})+", redis):
-        #     error = 'Redis command pattern is invalid: "{}"'.format(redis)
-        #     raise AttributeError(error)
-
-        # # Iterate over the rows:
-        # for row in rows:
-        #     parts = row.split(delimeter)
-        #     for r in redis.split('|'):
-        #         cmd = r.strip()
-        #         cmd = cmd.format(*parts)
-        #         cmd = Parser.convert_cmd(cmd)
-        #         cmd = list(cmd)
-        #         cmd = Parser.concat_cmd(cmd)
-        #         sys.stdout.write(cmd)
-
-    @staticmethod
-    def convert_cmd(cmd, resp_pattern='${}\r\n{}'):
-        for part in cmd.split():
-            size = str(len(str(part).encode('utf8')))
-            yield resp_pattern.format(size, str(part))
-
-    @staticmethod
-    def concat_cmd(cmd, resp_pattern='*{}\r\n{}\r\n'):
-        size = str(len(cmd))
-        cmd = '\r\n'.join(cmd)
-        return resp_pattern.format(size, cmd)
-    
-    @staticmethod
-    def parse_input(message):
+    def parse_resp(message):
         """
-        Parse the input message into Redis RESP format.
+        Parse a RESP-formatted message and return the command and its arguments.
         """
-        cmd = list(Parser.convert_cmd(message))
-        return Parser.concat_cmd(cmd)
+        lines = message.split('\r\n')  # Split by the RESP delimiter
 
+        if lines[0][0] != '*':
+            raise ValueError("Invalid RESP array format")
+
+        num_elements = int(lines[0][1:])  # Number of elements in the RESP array
+
+        if num_elements < 2:
+            raise ValueError("RESP message must contain at least 2 elements")
+
+        command = None
+        argument = None
+
+        i = 1
+        while i < len(lines):
+            print(f"Lines {lines}")
+            if lines[i][0] == '$':  # Bulk string
+                length = int(lines[i][1:])
+                i += 1  # Move to the next line with the actual data
+
+                # First bulk string is the command
+                if command is None:
+                    command = lines[i]
+                else:
+                    # Second bulk string is the argument
+                    argument = lines[i]
+                i += 1  # Move to the next '$' or end
+
+            else:
+                i += 1
+
+        if command is None or argument is None:
+            raise ValueError("Command or argument not found in RESP message")
+
+        return command, argument
