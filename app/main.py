@@ -8,8 +8,11 @@ def main():
     # Uncomment this to pass the first stage
     #
     server_socket = socket.create_server(("localhost", 6379))
-    client, addr = server_socket.accept() # wait for client
-    client.send(b"+PONG\r\n")
+    
+    while(server_socket.accept()):
+        client, addr = server_socket.accept() # wait for client
+
+        client.send(b"+PONG\r\n")
 
 
 if __name__ == "__main__":
