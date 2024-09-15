@@ -28,7 +28,8 @@ class Parser:
 
         i = 1
         while i < len(lines):
-            print(f"Lines {lines}")
+            
+            print(f"Lines {lines} value of i {i}")
             if lines[i].startswith('$'):  # Bulk string
                 length = int(lines[i][1:])
                 i += 1  # Move to the next line with the actual data
@@ -46,6 +47,8 @@ class Parser:
                     command2 = lines[i]
                 elif command and argument1 and argument2 and command2:
                     argument3 = lines[i]
+                else:
+                    i+=1
                     # break
                   # Move to the next '$' or end
                 # if command and command !='SET' and argument1:
