@@ -18,7 +18,7 @@ async def handle_client(reader,writer):
         # messages = messages.split('\n')
         try:
             command,argument,argument2 = Parser.parse_resp(messages)
-            print(f"Parsed command: {command}, argument: {argument}")
+            print(f"Parsed command: {command}, argument: {argument} argument2 {argument2}")
         except Exception as e:
             print(f"Error parsing RESP message: {e}")
             writer.write(b'-ERR invalid RESP format\r\n')  # Send an error response
@@ -33,10 +33,14 @@ async def handle_client(reader,writer):
             echo_response = f'+{argument}\r\n'
             writer.write(echo_response.encode())
         elif command == 'SET':
+            print("Inside SET")
             redis_store[argument] = argument2
+            print(f"Redis store {redis_store}")
         elif command == 'GET':
+            print("Inside SET")
             value = redis_store[argument]
             set_response = f'+{value}\r\n'
+            print(f"GET value {set_response}")
             writer.write(set_response.encode())
 
            
