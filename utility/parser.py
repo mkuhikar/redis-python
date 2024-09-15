@@ -36,19 +36,19 @@ class Parser:
 
                 # First bulk string is the command
                 if command is None:
-                    print(f"command set at {command} and i {i}")
                     command = lines[i]
+                    print(f"command set at {command} and i {i}")
                 elif argument1 is None:
                     # Second bulk string is the argument
                     argument1 = lines[i]
                     print(f"argument 1 set at {argument1} and i {i}")
-                elif command and argument1:
+                elif command and argument1 and not argument2:
                     argument2 = lines[i]
                     print(f"argument 2 set at {argument2} and i {i}")
-                elif command and argument1 and argument2:
+                elif command and argument1 and argument2 and not command2:
                     command2 = lines[i]
                     print(f"command2 set at {command2} and i {i}")
-                elif command and argument1 and argument2 and command2:
+                elif command and argument1 and argument2 and command2 and not argument3:
                     argument3 = lines[i]
                     print(f"argument3 set at {argument3} and i {i}")
                 else:
