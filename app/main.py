@@ -11,6 +11,7 @@ def main():
 
     client, addr = server_socket.accept() # wait for client
     messages = client.recv(1024).decode().split('\n')
+    print(f"Messages {messages}")
 
     for message in messages:
         if message == 'PING':
