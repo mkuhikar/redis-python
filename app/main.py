@@ -10,12 +10,12 @@ def main():
     server_socket = socket.create_server(("localhost", 6379))
 
     client, addr = server_socket.accept() # wait for client
-    messages = client.recv(1024).decode().split('\r\n')
+    messages = client.recv(1024).decode().split('\n')
     print(f"Messages {messages}")
-
+    client_response = b'+PONG\r\n'
     for message in messages:
-        if message == 'PING':
-            client.sendall(b'PONG\n')
+        if 'PING' in message:
+            client.sendall(client_response)
 
         
 
