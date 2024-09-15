@@ -13,9 +13,10 @@ def main():
     messages = client.recv(1024).decode().split('\n')
     print(f"Messages {messages}")
     client_response = b'+PONG\r\n'
-    for message in messages:
-        if 'PING' in message:
-            client.sendall(client_response)
+    while(True)
+        for message in messages:
+            if 'PING' in message:
+                client.sendall(client_response)
 
         
 
