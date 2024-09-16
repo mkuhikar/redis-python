@@ -8,60 +8,44 @@ class Parser:
     def parse_resp(message):
         """
         Parse a RESP-formatted message and return the command and its arguments.
+        This function will handle any Redis command and store its associated parameters.
         """
-        lines = message.split('\r\n')  # Split by the RESP delimiter
+        # Split the message by the RESP delimiter
+        lines = message.split('\r\n')
 
+        # Check that the first line indicates an array with '*'
         if lines[0][0] != '*':
             raise ValueError("Invalid RESP array format")
 
-        num_elements = int(lines[0][1:])  # Number of elements in the RESP array
+        # Extract the number of elements in the RESP array
+        num_elements = int(lines[0][1:])
 
-        if not 'PING'in lines and num_elements < 2:
-            raise ValueError("RESP message must contain at least 2 elements")
+        # Initialize the list to store the parsed command and arguments
+        parsed_elements = []
 
-        command = None
-        command2 = None
-        argument1 = None
-        argument2 = None
-        argument3 = None
-        expiry = None
-
-        i = 1
+        i = 1  # Line index
         while i < len(lines):
-            
-            print(f"Lines {lines} value of i {i}")
-            if lines[i].startswith('$'):  # Bulk string
-                length = int(lines[i][1:])
-                i += 1  # Move to the next line with the actual data
+            if lines[i].startswith('$'):  # Handle bulk string
+                length = int(lines[i][1:])  # Length of the bulk string (ignored here)
+                i += 1  # Move to the next line which contains the data
 
-                # First bulk string is the command
-                if command is None:
-                    command = lines[i]
-                    print(f"command set at {command} and i {i}")
-                elif argument1 is None:
-                    # Second bulk string is the argument
-                    argument1 = lines[i]
-                    print(f"argument 1 set at {argument1} and i {i}")
-                elif command and argument1 and not argument2:
-                    argument2 = lines[i]
-                    print(f"argument 2 set at {argument2} and i {i}")
-                elif command and argument1 and argument2 and not command2:
-                    command2 = lines[i]
-                    print(f"command2 set at {command2} and i {i}")
-                elif command and argument1 and argument2 and command2 and not argument3:
-                    argument3 = lines[i]
-                    print(f"argument3 set at {argument3} and i {i}")
+                # Store the actual data (command or argument)
+                if len(lines[i]) == length:  # Ensure the length matches the specified bulk string length
+                    parsed_elements.append(lines[i])
                 else:
-                    i+=1
-                    # break
-                  # Move to the next '$' or end
-                # if command and command !='SET' and argument1:
-                #     break
-                
-            else:
-                i += 1
-        print(f"Command {command} argument {argument1} argument2 {argument2} command2 {command2} argument3 {argument3}")
-        if command is None :
-            raise ValueError("Command or argument not found in RESP message")
+                    raise ValueError("Bulk string length mismatch")
 
-        return command, argument1,argument2,command2,argument3
+            i += 1  # Move to the next line
+
+        # Ensure that the parsed elements match the expected number of elements
+        if len(parsed_elements) != num_elements:
+            raise ValueError("Number of elements does not match the RESP array size")
+
+        # The first element is the command, and the rest are the arguments
+        command = parsed_elements[0].upper()  # Redis commands are usually case-insensitive
+        arguments = parsed_elements[1:]  # All other elements are arguments
+
+        print(f"Command: {command}, Arguments: {arguments}")
+
+        # Return the command and its arguments
+        return command, arguments

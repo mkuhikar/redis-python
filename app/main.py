@@ -16,49 +16,66 @@ async def handle_client(reader,writer):
         messages = data.decode()
         print(f"Received {messages} from {addr!r}")
         # messages = messages.split('\n')
-        try:
-            command,argument,argument2,command2,argument3 = Parser.parse_resp(messages)
-            print(f"Parsed command: {command}, argument: {argument} argument2 {argument2}")
-        except Exception as e:
-            print(f"Error parsing RESP message: {e}")
-            writer.write(b'-ERR invalid RESP format\r\n')  # Send an error response
-            await writer.drain()
-            continue
-
-       
-        if command == 'PING':
-            writer.write(client_response)
-        elif command == 'ECHO':
-
-            echo_response = f'+{argument}\r\n'
-            writer.write(echo_response.encode())
-        elif command == 'SET':
-            print("Inside SET")
-            if command2 == 'px':
-                expiration_time = time.time() + (int(argument3) / 1000)
-                redis_store[argument] = (argument2,expiration_time)
-            else:
-                redis_store[argument] = (argument2, None)
-            print(f"Redis store {redis_store}")
-            ok_response = f"+OK\r\n"
-            writer.write(ok_response.encode())
-        elif command == 'GET':
-            print("Inside SET")
-            if argument in redis_store:
-                value,expiration_time = redis_store[argument]
-                if expiration_time and time.time()>expiration_time:
-                    del redis_store[argument]
-                    writer.write(b"$-1\r\n")
-                else:
-
-                    set_response = f'+{value}\r\n'
-                    print(f"GET value {set_response}")
-                    writer.write(set_response.encode())
-            else:
-                writer.write(b'$-1\r\n')
+    try:
+        # Parse the RESP message using the updated parser
+        command, arguments = Parser.parse_resp(messages)
+        print(f"Parsed command: {command}, arguments: {arguments}")
+    except Exception as e:
+        print(f"Error parsing RESP message: {e}")
+        writer.write(b'-ERR invalid RESP format\r\n')  # Send an error response
         await writer.drain()
+        
 
-           
+    # Handling the PING command
+    if command == 'PING':
+        writer.write(b'+PONG\r\n')
+
+    # Handling the ECHO command
+    elif command == 'ECHO':
+        if len(arguments) > 0:
+            echo_response = f'+{arguments[0]}\r\n'
+            writer.write(echo_response.encode())
+        else:
+            writer.write(b'-ERR wrong number of arguments for \'ECHO\' command\r\n')
+
+    # Handling the SET command
+    elif command == 'SET':
+        print("Inside SET")
+        if len(arguments) >= 2:
+            key = arguments[0]
+            value = arguments[1]
+            expiration_time = None
+
+            # Check for optional 'PX' argument for expiration
+            if len(arguments) >= 4 and arguments[2].lower() == 'px':
+                expiration_time = time.time() + (int(arguments[3]) / 1000)
+
+            redis_store[key] = (value, expiration_time)
+            print(f"Redis store updated: {redis_store}")
+            writer.write(b'+OK\r\n')
+        else:
+            writer.write(b'-ERR wrong number of arguments for \'SET\' command\r\n')
+
+    # Handling the GET command
+    elif command == 'GET':
+        if len(arguments) > 0:
+            key = arguments[0]
+            if key in redis_store:
+                value, expiration_time = redis_store[key]
+                if expiration_time and time.time() > expiration_time:
+                    del redis_store[key]  # Key has expired
+                    writer.write(b'$-1\r\n')  # Key not found
+                else:
+                    get_response = f'${len(value)}\r\n{value}\r\n'
+                    print(f"GET value: {get_response}")
+                    writer.write(get_response.encode())
+            else:
+                writer.write(b'$-1\r\n')  # Key not found
+        else:
+            writer.write(b'-ERR wrong number of arguments for \'GET\' command\r\n')
+
+    # Drain the writer buffer and close the connection
+    await writer.drain()
 
     print("Close the connection")
     writer.close()
