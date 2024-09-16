@@ -12,6 +12,7 @@ class Parser:
         """
         # Split the message by the RESP delimiter
         lines = message.split('\r\n')
+        print(f"lines {lines}")
 
         # Check that the first line indicates an array with '*'
         if lines[0][0] != '*':

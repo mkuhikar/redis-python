@@ -14,7 +14,7 @@ async def handle_client(reader,writer):
         if not data:
             break
         messages = data.decode()
-        print(f"Received {messages} from {addr!r}")
+        print(f"Received1 {messages} from {addr!r}")
         # messages = messages.split('\n')
     try:
         # Parse the RESP message using the updated parser
