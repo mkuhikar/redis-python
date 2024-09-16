@@ -11,6 +11,7 @@ class Parser:
         This function will handle any Redis command and store its associated parameters.
         """
         # Split the message by the RESP delimiter
+        print("Parsing details")
         lines = message.split('\r\n')
         print(f"lines {lines}")
 
