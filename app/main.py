@@ -1,5 +1,5 @@
 import socket  # noqa: F401
-import asyncio
+import asyncio,time
 from asyncio import Server
 from utility.parser import Parser
 
@@ -34,16 +34,29 @@ async def handle_client(reader,writer):
             writer.write(echo_response.encode())
         elif command == 'SET':
             print("Inside SET")
-            redis_store[argument] = argument2
+            if command2 == 'px':
+                expiration_time = time.time() + (int(argument3) / 1000)
+                redis_store[argument] = (argument2,argument3)
+            else:
+                redis_store[argument] = (argument2, None)
             print(f"Redis store {redis_store}")
             ok_response = f"+OK\r\n"
             writer.write(ok_response.encode())
         elif command == 'GET':
             print("Inside SET")
-            value = redis_store[argument]
-            set_response = f'+{value}\r\n'
-            print(f"GET value {set_response}")
-            writer.write(set_response.encode())
+            if argument in redis_store:
+                value,expiration_time = redis_store[argument]
+                if expiration_time and time.time()>expiration_time:
+                    del redis_store[argument]
+                    writer.write(b"$-1\r\n")
+                else:
+
+                    set_response = f'+{value}\r\n'
+                    print(f"GET value {set_response}")
+                    writer.write(set_response.encode())
+            else:
+                writer.write(b'$-1\r\n')
+        await writer.drain()
 
            
 
