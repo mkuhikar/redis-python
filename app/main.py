@@ -36,7 +36,7 @@ async def handle_client(reader,writer):
             print("Inside SET")
             if command2 == 'px':
                 expiration_time = time.time() + (int(argument3) / 1000)
-                redis_store[argument] = (argument2,argument3)
+                redis_store[argument] = (argument2,expiration_time)
             else:
                 redis_store[argument] = (argument2, None)
             print(f"Redis store {redis_store}")
