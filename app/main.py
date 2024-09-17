@@ -106,10 +106,10 @@ async def handle_client(reader,writer):
             if arguments[0] == 'GET' and arguments[1] == 'dir':
                 config = load_config()
                 print(f"obtained config {config}")
-                return_val= f"*2\r\ndir\r\n${len(config['dir'])}\r\n{config['dir']}\r\n"
+                return_val= f"*2\r\n$3\r\ndir\r\n${len(config['dir'])}\r\n{config['dir']}\r\n"
                 writer.write(return_val.encode())
             elif arguments[0] == 'GET' and arguments[1] == 'dbfilename':
-                return_val= f"*2\r\ndbfilename\r\n${len(config['dbfilename'])}\r\n{config['dbfilename']}\r\n"
+                return_val= f"*2\r\n$3\r\ndbfilename\r\n${len(config['dbfilename'])}\r\n{config['dbfilename']}\r\n"
                 writer.write(return_val.encode())
 
     await writer.drain()
