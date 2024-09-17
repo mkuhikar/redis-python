@@ -123,7 +123,7 @@ async def main():
     parser.add_argument('--dir',type=str,help="The RDB file path")
     parser.add_argument('--dbfilename',type=str,help='The RDB filename')
     args = parser.parse_args()
-    print(f"obtained args {config}")
+    print(f"obtained args {args}")
      # Load existing configuration from file if available
     config = load_config()
     directory = args.dir if args.dir else (config['dir'] if config and config['dir'] else None)
