@@ -1,60 +1,62 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/593372ba-0926-4272-95c1-0e4a931de502)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Overview
+This repository contains a Python-based Redis server implementation that aims to replicate the functionality of the standard Redis server. It provides a foundation for understanding and experimenting with Redis concepts and architecture.
 
-This is a starting point for Python solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
-
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
-
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
-
-# Passing the first stage
-
-The entry point for your Redis implementation is in `app/main.py`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
-
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
-```
-
-That's all!
-
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `python (3.x)` installed locally
-1. Run `./your_program.sh` to run your Redis server, which is implemented in
-   `app/main.py`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
-
-# Troubleshooting
-
-## module `socket` has no attribute `create_server`
-
-When running your server locally, you might see an error like this:
+## Prerequisites
+Python 3.6 or later
+pip for package installation
+Installation
+Clone the repository:
 
 ```
-Traceback (most recent call last):
-  File "/.../python3.7/runpy.py", line 193, in _run_module_as_main
-    "__main__", mod_spec)
-  File "/.../python3.7/runpy.py", line 85, in _run_code
-    exec(code, run_globals)
-  File "/app/app/main.py", line 11, in <module>
-    main()
-  File "/app/app/main.py", line 6, in main
-    s = socket.create_server(("localhost", 6379), reuse_port=True)
-AttributeError: module 'socket' has no attribute 'create_server'
+git clone https://github.com/your-username/redis-python-server.git
 ```
 
-This is because `socket.create_server` was introduced in Python 3.8, and you
-might be running an older version.
+Install dependencies:
 
-You can fix this by installing Python 3.8 locally and using that.
+```
+cd redis-python-server
+pip install -r requirements.txt
+```
 
-If you'd like to use a different version of Python, change the `language_pack`
-value in `codecrafters.yml`.
+### Usage
+
+Start the server:
+
+```
+python app/main.py
+```
+
+Connect to the server:
+Use a Redis client library like redis-py to connect to the server. For example:
+
+```
+import redis
+
+r = redis.Redis(host='localhost', port=6379)
+```
+
+Perform Redis operations:
+Use the Redis client to execute commands like SET, GET, LPUSH, LRANGE, etc. For example:
+
+```
+r.set('key', 'value')
+value = r.get('key')
+print(value)
+```
+
+### Key Features
+1. Basic Redis commands: Implements core Redis commands for data structures like strings, lists, sets, hashes, and zsets.
+2. Persistence: Supports persistence mechanisms like RDB and AOF for data durability.
+3. Networking: Handles TCP connections and network communication.
+4. Data structures: Implements the underlying data structures used in Redis.
+
+### Limitations
+1. Performance: May not match the performance of the official Redis server due to Python's overhead.
+2. Feature completeness: Might not implement all advanced Redis features or optimizations.
+3. Testing: Requires thorough testing to ensure correctness and reliability.
+
+### Contributing
+Contributions are welcome! Please follow the guidelines in the CONTRIBUTING.md file.
+
+### License
+This project is licensed under the MIT License. 
