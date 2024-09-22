@@ -1,21 +1,23 @@
 import struct
-import binascii
+# import binascii
+# import crccheck
 class RDBWriter:
     
     def __init__(self,file):
-        self.file = self.file
+        self.file = file
     def write_rdb_header(self):
         header = b"REDIS0011"
         self.file.write(header)
-    def write_rdb_metadata(self,metadata):
-        for key,value in metadata.items():
-            self.write_string.write(b'\xFA')
-            self.write_string.write(self.file)
+    def write_rdb_metadata(self, metadata):
+        for key, value in metadata.items():
+            self.file.write(b'\xFA')  # Start of metadata subsection
+            self.write_string(key)    # Write metadata key (string encoded)
+            self.write_string(value)
     def write_string(self,string):
         length = len(string)
         self.file.write(struct.pack('B', length))  # Write the size of the string
         self.file.write(string.encode())  # Write the string itself
-    def write_rdb_database(self,file,db_index,key_values):
+    def write_rdb_database(self,db_index,key_values):
         self.file.write(b'\xFE')
         self.file.write(struct.pack('B',db_index))
         
@@ -25,6 +27,7 @@ class RDBWriter:
 
         
         for key,data in key_values.items():
+            print(f"Key {key} data {data}")
             # if isinstance(data['value'],str):
                 # self.file.write(b'\x00')  # Value type is string (0x00)
         
@@ -53,15 +56,20 @@ class RDBWriter:
                 
                 self.file.write(b'\x00')
                 self.file.write(key.encode())
-                self.file.write(data['value'].encode())
+                
+                self.file.write(data.encode())
     def write_rdb_end(self):
         self.file.write(b'\xFF')  # End of self.file marker
-        checksum = binascii.crc64(self.file)  # Calculate checksum (using crc64)
-        self.file.write(checksum)
+        # crc64 = crccheck.crc.Crc64()
+        # checksum = crc64.calc(self.file)  # Calculate checksum (using crc64)
+        # self.file.write(checksum)
     def save_rdb_file(self,file_path, metadata, db_data):
-        with open(self.file_path, 'wb') as self.file:
-            self.write_rdb_header(self.file)
-            self.write_rdb_metadata(self.file, metadata)
+        print(f"Attempting to store {db_data}")
+        with open(file_path, 'wb') as file:
+            self.file = file
+            self.write_rdb_header()
+            self.write_rdb_metadata(metadata)
             for db_index, key_values in db_data.items():
-                self.write_rdb_database(self.file, db_index, key_values)
-            self.write_rdb_end(self.file)
+                
+                self.write_rdb_database(db_index, key_values)
+            self.write_rdb_end()
