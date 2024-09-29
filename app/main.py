@@ -157,7 +157,6 @@ class Server:
             print(f"Before attribute check {command.lower()}")
 
             if hasattr(self,command.lower()):
-                print("Into attr")
                 func = getattr(self,command.lower())
                 response = func()
                 writer.write(response)

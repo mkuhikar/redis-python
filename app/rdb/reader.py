@@ -8,9 +8,9 @@ class RDBReader:
                 print("RDB content =======================")
                 print(rdb_content)
                 if rdb_content:
-                    key = self.parse_redis_file_format(rdb_content)
-                    print(f"key {key}")
-                    return key
+                    key,value = self.parse_redis_file_format(rdb_content)
+                    print(f"key {key} value {value}")
+                    return key,value
                     # return "*1\r\n${}\r\n{}\r\n".format(len(key), key).encode()
 
 
@@ -22,6 +22,7 @@ class RDBReader:
         key_bytes = splited_parts[key_index]
         value_bytes = splited_parts[value_index]
         key = self.remove_bytes_characters(key_bytes)
+        print(f"Value bytes {value}")
         value  = self.remove_bytes_characters(value_bytes)
         return key,value
     
