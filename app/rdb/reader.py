@@ -22,7 +22,9 @@ class RDBReader:
         key_bytes = splited_parts[key_index]
         value_bytes = splited_parts[value_index]
         key = self.remove_bytes_characters(key_bytes)
-        return key
+        value  = self.remove_bytes_characters(value_bytes)
+        return key,value
+    
     def remove_bytes_characters(self,string: str):
         if string.startswith("x"):
             return string[3:]
