@@ -85,10 +85,11 @@ class Server:
                     print(f"GET value: {get_response}")
                     # writer.write(get_response.encode())
             else:
+                self.config_details = self.config_instance.load_config()
                 rdb_file_path = os.path.join(self.config_details['dir'],self.config_details['dbfilename'])
                 reader = RDBReader()
                 rdb_file_key,rdb_file_value = reader.read_rdb_file(rdb_file_path)
-                if rdb_file_key == key:
+                if rdb_file_key and rdb_file_key == key:
                     get_response = f'${len(rdb_file_value)}\r\n{rdb_file_value}\r\n'
                     print(f"GET {get_response}")
                     response = get_response.encode()
