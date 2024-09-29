@@ -7,14 +7,14 @@ class Config:
         """
         Save the provided directory and dbfilename to a JSON file for persistence.
         """
-        config = {
+        config_file_details = {
             'dir':directory,
             'dbfilename':dbfilename
 
         }
         with open(self.config_file,'w') as file:
-            json.dump(config,file)
-        print(f"Configuration saved: {config}")
+            json.dump(config_file_details,file)
+        print(f"Configuration saved: {config_file_details}")
     
     def load_config(self):
         if os.path.exists(self.config_file):
